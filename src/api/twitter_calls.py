@@ -4,6 +4,25 @@
 import oauth2 as oauth
 from config import data, geocodes
 import json
+import re
+import pdb
+
+def _pre_process_tweets(tweet):
+    # Convert to lower
+    tweet = tweet.lower()
+    # Convert www.* or https?://* to URL
+    tweet = re.sub('((www\.[^\s]+)|(https?://[^\s]+))','URL', tweet)
+    # Convert @user to AT_USER
+    tweet = re.sub(r'@([^\s]+)', r'\1', tweet)
+    # Remove additional white spaces
+    tweet = re.sub('[\s]+',' ', tweet)
+    # Replace #hastags with hashtags (remove #)
+    tweet = re.sub(r'#([^\s]+)', r'\1', tweet)
+    # trim
+    tweet = tweet.strip('\'"')
+
+    return tweet
+
 
 # Return tweets to analyze
 def get_tweets(url, http_method="GET", post_body="", http_headers=None):
@@ -66,7 +85,9 @@ def search_tweets(url, http_method="GET", post_body="", http_headers=None):
     for user in json_response['statuses']:
         user_name = '@' + user['user']['screen_name']
         tweet = user['text']
-        print user_name + ' tweeted: ' + tweet
+        combined = user_name + ' tweeted: ' + tweet
+
+        print _pre_process_tweets(combined)
 
 
 def geo_tweets(coast, http_method="GET", post_body="", http_headers=None):
