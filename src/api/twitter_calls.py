@@ -11,14 +11,14 @@ def _pre_process_tweets(tweet):
     # Convert to lower
     tweet = tweet.lower()
     # Convert www.* or https?://* to URL
-    tweet = re.sub('((www\.[^\s]+)|(https?://[^\s]+))','URL', tweet)
-    # Convert @user to AT_USER
+    tweet = re.sub('((www\.[^\s]+)|(https?://[^\s]+))', 'URL', tweet)
+    # Convert @user to user (remove @)
     tweet = re.sub(r'@([^\s]+)', r'\1', tweet)
     # Remove additional white spaces
     tweet = re.sub('[\s]+',' ', tweet)
     # Replace #hastags with hashtags (remove #)
     tweet = re.sub(r'#([^\s]+)', r'\1', tweet)
-    # trim
+    # Trim
     tweet = tweet.strip('\'"')
 
     return tweet
