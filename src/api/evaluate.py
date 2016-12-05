@@ -21,6 +21,32 @@ def _get_sentences(is_positive):
 
     return data_array
 
+def _negate_sequence(text):
+    negation = False
+    prev_word = 0
+    delims = "?.,!:;"
+    result = []
+    words = text.split()
+
+    for word in words:
+        stripped = word.strip(delims).lower()
+        if negation:
+            result.append("not_" + stripped)
+            result.pop(prev_word - 1)
+            negation = False
+        else:
+            result.append(stripped)
+
+        if stripped in ["not", "cannot", "no"] or stripped.endswith("n't"):
+            negation = True
+
+        if any(c in word for c in delims):
+            negation = False
+
+        prev_word += 1
+
+    return result
+
 class Splitter(object):
     def __init__(self):
         self.nltk_splitter = nltk.data.load('tokenizers/punkt/english.pickle')
@@ -76,7 +102,7 @@ class DictionaryTagger(object):
         else:
             return ''
 
-def sentiment_score(sentence):    
+def sentiment_score(sentence):
     sentence = sentence[0]
     score = 0
     for (word, lemma, postag, pos_score, neg_score) in sentence:
@@ -97,6 +123,9 @@ if __name__ == "__main__":
 
     # pos_tagged_sentences = [[('Every', 'Every', ['DT']), ('time', 'time', ['NN']), ('I', 'I', ['PRP']), ('eat', 'eat', ['VBP']), ('here', 'here', ['RB']), (',', ',', [',']), ('I', 'I', ['PRP']), ('see', 'see', ['VBP']), ('caring', 'caring', ['VBG']), ('teamwork', 'teamwork', ['NN']), ('to', 'to', ['TO']), ('a', 'a', ['DT']), ('professional', 'professional', ['JJ']), ('degree', 'degree', ['NN']), ('.', '.', ['.'])]]
     # print dicttagger.tag(pos_tagged_sentences)
+
+    # print _negate_sequence("This isn't good") # ['this', 'not_good']
+    # print _negate_sequence("I cannot believe this") # ['i', 'not_believe', 'this']
 
     # Go through the sentences and tag
     for sentence in pos_data:
