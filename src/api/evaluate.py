@@ -4,6 +4,10 @@ from nltk.corpus import wordnet, stopwords
 from nltk.corpus import sentiwordnet as swn
 import yaml
 
+
+GOOD_EMOTICONS = [':-)', ':)', '(:', '(-:', ':-D', ':D', ';-)', ';)', ';-D', ';D']
+BAD_EMOTICONS = [':-(', ':(', '):', ')-:']
+
 def _get_sentences(is_positive):
     if is_positive:
         data = open('dataset/positives.txt', 'r')
@@ -25,26 +29,34 @@ def _get_sentences(is_positive):
 def _preprocess_sequence(text):
     negation = False
     prev_word = 0
-    delims = "?.,!:;"
+    delims = "?.,!" # removed : and ; for emoticon purposes
     result = []
     words = text.split()
     stop_words = set(stopwords.words('english'))
 
+    # Preprocessing words for more efficient sentiment scores
     for word in words:
         stripped = word.strip(delims).lower()
+
+        if stripped in GOOD_EMOTICONS:
+            result.append('happy')
+            continue
+        elif stripped in BAD_EMOTICONS:
+            result.append('sad')
+            continue
 
         # Check for words that have no meaning
         if stripped in stop_words:
             continue
 
         if negation:
-            result.append("not_" + stripped)
+            result.append('not_' + stripped)
             result.pop(prev_word - 1)
             negation = False
         else:
             result.append(stripped)
 
-        if stripped in ["not", "cannot", "no"] or stripped.endswith("n't"):
+        if stripped in ['not', 'cannot', 'no'] or stripped.endswith("n't"):
             negation = True
 
         if any(c in word for c in delims):
@@ -132,8 +144,9 @@ if __name__ == "__main__":
     # print dicttagger.tag(pos_tagged_sentences)
 
     print _preprocess_sequence("This isn't good at all") # ['not_good']
-    print _preprocess_sequence("I love this movie so much, makes me happy") # ['love', 'movie', 'much', 'makes', 'happy']
+    print _preprocess_sequence("I love this movie so much. :)") # ['love', 'movie', 'much', 'happy']
     print _preprocess_sequence("I cannot believe this") # ['not_believe']
+    print _preprocess_sequence("Cried so much when dog died :(") # ['cried', 'much', 'dog', 'died', 'sad']
 
     # Go through the sentences and tag
     # for sentence in pos_data:
