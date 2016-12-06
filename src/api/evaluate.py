@@ -28,7 +28,17 @@ def _get_sentences(is_positive):
 
 def _replace_two_or_more(text):
     pattern = re.compile(r"(.)\1{1,}", re.DOTALL)
-    return pattern.sub(r"\1", text)
+    return pattern.sub(r"\1\1", text)
+
+
+def _bigramReturner (text):
+    text = text.lower()
+    # text = removePunctuation(text)
+    bigramFeatureVector = []
+    for item in nltk.bigrams(text.split()):
+        bigramFeatureVector.append(' '.join(item))
+
+    return bigramFeatureVector
 
 
 def _preprocess_sequence(text):
@@ -136,6 +146,7 @@ def sentiment_score(sentence):
 
     return score
 
+
 if __name__ == "__main__":
     # Positives and negative sets
     pos_data = _get_sentences(True)
@@ -149,10 +160,15 @@ if __name__ == "__main__":
     # pos_tagged_sentences = [[('Every', 'Every', ['DT']), ('time', 'time', ['NN']), ('I', 'I', ['PRP']), ('eat', 'eat', ['VBP']), ('here', 'here', ['RB']), (',', ',', [',']), ('I', 'I', ['PRP']), ('see', 'see', ['VBP']), ('caring', 'caring', ['VBG']), ('teamwork', 'teamwork', ['NN']), ('to', 'to', ['TO']), ('a', 'a', ['DT']), ('professional', 'professional', ['JJ']), ('degree', 'degree', ['NN']), ('.', '.', ['.'])]]
     # print dicttagger.tag(pos_tagged_sentences)
 
-    print _preprocess_sequence("This isn't good at all") # ['not_good']
-    print _preprocess_sequence("I love this movie so muchhhhhh. :)") # ['love', 'movie', 'much', 'happy']
-    print _preprocess_sequence("I cannot believe this") # ['not_believe']
-    print _preprocess_sequence("Cried so much when dog died :(") # ['cried', 'much', 'dog', 'died', 'sad']
+    # print _preprocess_sequence("This isn't good at all") # ['not_good']
+    # print _preprocess_sequence("I love this movie so muchhhhhh. :)") # ['love', 'movie', 'much', 'happy']
+    # print _preprocess_sequence("I cannot believe this") # ['not_believe']
+    # print _preprocess_sequence("Cried so much when dog died :(") # ['cried', 'much', 'dog', 'died', 'sad']
+
+    text = "I love this movie so much"
+    print _bigramReturner(text)
+
+
 
     # Go through the sentences and tag
     # for sentence in pos_data:
