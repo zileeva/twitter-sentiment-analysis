@@ -52,14 +52,14 @@ def get_features(sentence):
 
 
 def classify(data):
-  c = naive_bayes_classifier.NaiveBayes(data)
-  # training_data = nltk.classify.util.apply_features(get_features, data)
-  # classifier = nltk.NaiveBayesClassifier.train(training_data)
+  # c = naive_bayes_classifier.NaiveBayes(data)
+  training_data = nltk.classify.util.apply_features(get_features, data)
+  classifier = nltk.NaiveBayesClassifier.train(training_data)
 
-  # testTweet = 'Congrats @ravikiranj, i heard you wrote a new tech post on sentiment analysis'
-  # processedTestTweet = preprocessor.preprocess(testTweet)
-  # sentiment = classifier.classify(get_features(get_feature_vector(processedTestTweet)))
-  # print "testTweet = %s, sentiment = %s\n" % (testTweet, sentiment)
+  testTweet = 'Congrats @ravikiranj, i heard you wrote a new tech post on sentiment analysis'
+  processedTestTweet = preprocessor.preprocess(testTweet)
+  sentiment = classifier.classify(get_features(get_feature_vector(processedTestTweet)))
+  print "testTweet = %s, sentiment = %s\n" % (testTweet, sentiment)
 
 
 if __name__ == "__main__":
