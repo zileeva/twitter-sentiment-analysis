@@ -26,11 +26,17 @@ def _get_sentences(is_positive):
     return data_array
 
 
+def _replace_two_or_more(text):
+    pattern = re.compile(r"(.)\1{1,}", re.DOTALL)
+    return pattern.sub(r"\1", text)
+
+
 def _preprocess_sequence(text):
     negation = False
     prev_word = 0
     delims = "?.,!" # removed : and ; for emoticon purposes
     result = []
+    text = _replace_two_or_more(text)
     words = text.split()
     stop_words = set(stopwords.words('english'))
 
@@ -144,7 +150,7 @@ if __name__ == "__main__":
     # print dicttagger.tag(pos_tagged_sentences)
 
     print _preprocess_sequence("This isn't good at all") # ['not_good']
-    print _preprocess_sequence("I love this movie so much. :)") # ['love', 'movie', 'much', 'happy']
+    print _preprocess_sequence("I love this movie so muchhhhhh. :)") # ['love', 'movie', 'much', 'happy']
     print _preprocess_sequence("I cannot believe this") # ['not_believe']
     print _preprocess_sequence("Cried so much when dog died :(") # ['cried', 'much', 'dog', 'died', 'sad']
 
