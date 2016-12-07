@@ -17,7 +17,7 @@ def get_sample_data(list_of_files):
     data = open(os.path.abspath(__file__ + "/../../../dataset") + "/" + file_name)
     for sentence in data:
       sentiment = sentence[-2:].rstrip()
-      sample_data.append((sentence[:-2], sentiment))
+      sample_data.append((sentence[:-3], sentiment))
   return sample_data
 
 
@@ -65,10 +65,10 @@ def get_pos_tag_feature_vector(sentence):
 def get_all_f_v(sentence):
   f_v = []
   f_v.append(get_word_feature_vector(sentence))
-  f_v.append(get_bigram_feature_vector(sentence))
   f_v.append(get_negation_feature_vector(sentence))
   f_v.append(get_emoticon_feature_vector(sentence))
-  f_v.append(get_pos_tag_feature_vector(sentence))
+  f_v.append(get_bigram_feature_vector(sentence))
+  # f_v.append(get_pos_tag_feature_vector(sentence))
   return f_v
 
 def get_feature_vectors(processed_data):
@@ -80,52 +80,40 @@ def get_feature_vectors(processed_data):
     feature_data.append((feature_vectors, sentiment))
   return feature_data
 
-def get_uni_word_features(sentence):
-  features = {}
-  for f in feature_list:
-    features[f] = (f in set(sentence))
-  return features
-
 def get_bi_word_features(sentence):
   features = {}
   for f in feature_list:
-    features[f] = (f in set(nltk.bigrams(sentence)))
-  return features
-
-def get_negation_features(sentence):
-  features = {}
-  for f in feature_list:
-    features[f] = (f in set(preprocessor.mark_negation(sentence)))
-  return features
-
-def get_emoticon_features(sentence):
-  features = {}
-  for f in feature_list:
-    features[f] = (f in set(preprocessor.mark_emoticons(sentence)))
-  return features
-
-def get_pos_tag_features(sentence):
-  features = {}
-  for f in feature_list:
-    features[f] = (f in set(preprocessor.mark_pos_tag(sentence)))
+    if (f in set(nltk.bigrams(sentence))):
+      features[f] = True
   return features
 
 def extract_features(featured_sentence):
   features = {}
-  features.update(get_uni_word_features(featured_sentence))
-  features.update(get_bi_word_features(featured_sentence))
-  features.update(get_negation_features(featured_sentence))
-  features.update(get_emoticon_features(featured_sentence))
-  features.update(get_pos_tag_features(featured_sentence))
+  for f in feature_list:
+    if (f in set(featured_sentence)):
+      features[f] = True
+    if (f in set(preprocessor.mark_negation(featured_sentence))):
+      features[f] = True
+    if (f in set(preprocessor.mark_emoticons(featured_sentence))):
+      features[f] = True
+    if (f in set(nltk.bigrams(featured_sentence))):
+    # if (f in set(preprocessor.mark_pos_tag(featured_sentence))):
+      features[f] = True
+
   return features
 
 def extract_features_all(featured_sentences):
   features = {}
-  features.update(get_uni_word_features(featured_sentences[0]))
-  features.update(get_bi_word_features(featured_sentences[1]))
-  features.update(get_negation_features(featured_sentences[2]))
-  features.update(get_emoticon_features(featured_sentences[3]))
-  features.update(get_pos_tag_features(featured_sentences[4]))
+  for f in feature_list:
+    if (f in set(featured_sentences[0])):
+      features[f] = True
+    if (f in set(preprocessor.mark_negation(featured_sentences[1]))):
+      features[f] = True
+    if (f in set(preprocessor.mark_emoticons(featured_sentences[2]))):
+      features[f] = True
+    if (f in set(nltk.bigrams(featured_sentences[3]))):
+    # if (f in set(preprocessor.mark_pos_tag(featured_sentences[3]))):
+      features[f] = True
   return features
 
 def write_training_data(data):
@@ -144,11 +132,12 @@ def read_training_data():
 def classify(data):
   training_data = nltk.classify.util.apply_features(extract_features, data)
   write_training_data(training_data)
-  print training_data
+  # print training_data
   training_data = read_training_data()
+  print "here"
   classifier = nltk.NaiveBayesClassifier.train(training_data)
 
-  testTweet = 'Congrats @ravikiranj, i heard you wrote a new tech post on sentiment analysis excellent sound how, not really impressed :('
+  testTweet = 'Today was bad :)'
   processedTestTweet = preprocessor.preprocess(testTweet)
   sentiment = classifier.classify(extract_features_all(get_all_f_v(processedTestTweet)))
   print "testTweet = %s, sentiment = %s\n" % (testTweet, sentiment)
