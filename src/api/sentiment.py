@@ -154,7 +154,6 @@ def _classify_tweets(classifier, coast, query):
   tweets = geo_tweets(coast, query)
 
   print len(tweets)
-
   for tweet in tweets:
       processed_tweet = preprocessor.preprocess(tweet)
       sentiment = classifier.classify(extract_features_all(get_all_f_v(processed_tweet)))
@@ -174,7 +173,9 @@ def _classify(data, coast, query):
 def sentiment_tweets(coast, query):
     sample_data = get_sample_data([ 'training_positives.txt', 'training_negatives.txt'])
     processed_data = preprocess(sample_data)
+    global feature_vectors
     feature_vectors = get_feature_vectors(processed_data)
+    global feature_list
     feature_list = [f[0] for f in feature_vectors]
     feature_list = [val for sublist in feature_list for val in sublist]
     _classify(feature_vectors, coast, query)
