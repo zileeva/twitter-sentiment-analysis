@@ -117,35 +117,57 @@ def extract_features_all(featured_sentences):
   return features
 
 def write_training_data(data):
-  file_name = open(os.path.abspath(__file__ + "/../../../dataset") + "/" + "training_featured_data.txt", 'w')
+  file_name = open(os.path.abspath(__file__ + "/../../../dataset") + "/" + "features.txt", 'w')
   for item in data:
     file_name.write("%s %s\n" % (item[0], item[1]))
 
 def read_training_data():
     training_data = []
-    data = open(os.path.abspath(__file__ + "/../../../dataset") + "/" + "training_featured_data.txt")
+    data = open(os.path.abspath(__file__ + "/../../../dataset") + "/" + "features.txt")
     for sentence in data:
       sentiment = sentence[-2:].rstrip()
       training_data.append((ast.literal_eval(sentence[:-2]), sentiment))
     return training_data
 
+
+def test(classifier):
+  testing_data = get_sample_data([ 'testing_positives.txt', 'testing_negatives.txt' ])
+  sentences = [sentence[0] for sentence in testing_data]
+  sentiments = [sentence[1] for sentence in testing_data]
+
+  tested_sentiments = []
+  for sentence in sentences:
+    processed_sentence = preprocessor.preprocess(sentence)
+    sentiment = classifier.classify(extract_features_all(get_all_f_v(processed_sentence)))
+    tested_sentiments.append(sentiment)
+
+  correct_count = 0
+  for index, s in enumerate(tested_sentiments):
+    if s == sentiments[index]:
+      correct_count += 1
+  print sentiments
+  print tested_sentiments
+
+  print correct_count / len(tested_sentiments) 
+
 def classify(data):
-  training_data = nltk.classify.util.apply_features(extract_features, data)
-  write_training_data(training_data)
+  # training_data = nltk.classify.util.apply_features(extract_features, data)
+  # write_training_data(training_data)
   # print training_data
   training_data = read_training_data()
-  print "here"
   classifier = nltk.NaiveBayesClassifier.train(training_data)
 
-  testTweet = 'Today was bad :)'
-  processedTestTweet = preprocessor.preprocess(testTweet)
-  sentiment = classifier.classify(extract_features_all(get_all_f_v(processedTestTweet)))
-  print "testTweet = %s, sentiment = %s\n" % (testTweet, sentiment)
+  # testTweet = 'Today was bad :)'
+  # processedTestTweet = preprocessor.preprocess(testTweet)
+  # sentiment = classifier.classify(extract_features_all(get_all_f_v(processedTestTweet)))
+  test(classifier)
+  
+  # print "testTweet = %s, sentiment = %s\n" % (testTweet, sentiment)
 
 
 if __name__ == "__main__":
 
-  sample_data = get_sample_data([ 'positives.txt', 'negatives.txt'])
+  sample_data = get_sample_data([ 'training_positives.txt', 'training_negatives.txt'])
   processed_data = preprocess(sample_data)
   feature_vectors = get_feature_vectors(processed_data)
   feature_list = [f[0] for f in feature_vectors]
