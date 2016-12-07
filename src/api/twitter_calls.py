@@ -115,7 +115,6 @@ def _reverse_geocode(locations, query, http_method="GET", post_body="", http_hea
             tweet = user['text']
             tweets.append(tweet)
 
-    print len(tweets)
     return tweets
 
 
@@ -131,7 +130,7 @@ def geo_tweets(coast, query, http_method="GET", post_body="", http_headers=None)
 
             locations.append([lat, lng])
 
-        _reverse_geocode(locations, query) # change 10 with user tweets
+        return _reverse_geocode(locations, query) # change 10 with user tweets
     elif coast == 'both':
         print 'TO-DO: Return all cities'
     else:
