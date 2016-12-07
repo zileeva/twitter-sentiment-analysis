@@ -16,7 +16,7 @@ def get_sample_data(list_of_files):
   for file_name in list_of_files:
     data = open(os.path.abspath(__file__ + "/../../../dataset") + "/" + file_name)
     for sentence in data:
-      sentiment = sentence[-2:].rstrip()
+      sentiment = sentence[-2:].rstrip().replace(" ", "")
       sample_data.append((sentence[:-3], sentiment))
   return sample_data
 
@@ -139,16 +139,14 @@ def test(classifier):
   for sentence in sentences:
     processed_sentence = preprocessor.preprocess(sentence)
     sentiment = classifier.classify(extract_features_all(get_all_f_v(processed_sentence)))
+    sentiment = sentiment.replace(" ", "")
     tested_sentiments.append(sentiment)
 
   correct_count = 0
   for index, s in enumerate(tested_sentiments):
     if s == sentiments[index]:
       correct_count += 1
-  print sentiments
-  print tested_sentiments
-
-  print correct_count / len(tested_sentiments) 
+  print (float(correct_count) / len(tested_sentiments)) * 100
 
 def classify(data):
   # training_data = nltk.classify.util.apply_features(extract_features, data)
@@ -157,11 +155,11 @@ def classify(data):
   training_data = read_training_data()
   classifier = nltk.NaiveBayesClassifier.train(training_data)
 
-  # testTweet = 'Today was bad :)'
+  # testTweet = 'Good case, Excellent value.'
   # processedTestTweet = preprocessor.preprocess(testTweet)
   # sentiment = classifier.classify(extract_features_all(get_all_f_v(processedTestTweet)))
   test(classifier)
-  
+
   # print "testTweet = %s, sentiment = %s\n" % (testTweet, sentiment)
 
 
