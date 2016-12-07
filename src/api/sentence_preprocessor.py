@@ -39,7 +39,7 @@ class Preprocessor:
         sentence = re.sub('@[^\s]+','AT_USER',sentence) # convert @
         sentence = re.sub('[\s]+', ' ', sentence) # remove white spaces
         sentence = re.sub(r'#([^\s]+)', r'\1', sentence) # replace hashtags
-        sentence = sentence.strip()
+        sentence = sentence.replace('.', '').replace(',', '').replace('!', '').replace('?', '')
         sentence = sentence.rstrip('\'"') # removed quotes
         sentence = sentence.lstrip('\'"')
         return sentence
