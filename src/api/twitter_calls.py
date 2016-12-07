@@ -10,8 +10,8 @@ import pdb
 def _pre_process_tweets(tweet):
     # Convert to lower
     tweet = tweet.lower()
-    # Convert www.* or https?://* to URL
-    tweet = re.sub('((www\.[^\s]+)|(https?://[^\s]+))', 'URL', tweet)
+    # Convert www.* or https?://* to ' '
+    tweet = re.sub('((www\.[^\s]+)|(https?://[^\s]+))', ' ', tweet)
     # Convert @user to user (remove @)
     tweet = re.sub(r'@([^\s]+)', r'\1', tweet)
     # Remove additional white spaces
@@ -114,9 +114,8 @@ def _reverse_geocode(locations, query, http_method="GET", post_body="", http_hea
         for user in json_response['statuses']:
             user_name = '@' + user['user']['screen_name']
             tweet = user['text']
-            combined = user_name + ' tweeted: ' + tweet
 
-            print _pre_process_tweets(combined)
+            print _pre_process_tweets(tweet)
 
 
 
