@@ -2,6 +2,7 @@ import os
 import re
 import ast
 import sentence_preprocessor, naive_bayes_classifier
+from twitter_calls import geo_tweets
 
 import nltk.classify
 import nltk.sentiment.util
@@ -148,15 +149,18 @@ def test(classifier):
       correct_count += 1
   print (float(correct_count) / len(tested_sentiments)) * 100
 
-def classify_tweets(classifier):
-  file_name = open(os.path.abspath(__file__ + "/../../../dataset") + "/" + "tweets_east_beach.txt")
-  tweets = []
-  for tweet in file_name:
+def _classify_tweets(classifier, coast, query):
+  # file_name = open(os.path.abspath(__file__ + "/../../../dataset") + "/" + "tweets_east_beach.txt")
+  tweets = geo_tweets(coast, query)
+
+  print len(tweets)
+
+  for tweet in tweets:
       processed_tweet = preprocessor.preprocess(tweet)
       sentiment = classifier.classify(extract_features_all(get_all_f_v(processed_tweet)))
       print "Tweet = %s\nSentiment = %s\n" % (tweet, sentiment)
 
-def classify(data):
+def _classify(data, coast, query):
   # training_data = nltk.classify.util.apply_features(extract_features, data)
   # write_training_data(training_data)
   # print training_data
@@ -164,15 +168,13 @@ def classify(data):
   classifier = nltk.NaiveBayesClassifier.train(training_data)
 
   # test(classifier)
-  classify_tweets(classifier)
+  _classify_tweets(classifier, coast, query)
 
 
-if __name__ == "__main__":
-
-  sample_data = get_sample_data([ 'training_positives.txt', 'training_negatives.txt'])
-  processed_data = preprocess(sample_data)
-  feature_vectors = get_feature_vectors(processed_data)
-  feature_list = [f[0] for f in feature_vectors]
-  feature_list = [val for sublist in feature_list for val in sublist]
-  classify(feature_vectors)
-
+def sentiment_tweets(coast, query):
+    sample_data = get_sample_data([ 'training_positives.txt', 'training_negatives.txt'])
+    processed_data = preprocess(sample_data)
+    feature_vectors = get_feature_vectors(processed_data)
+    feature_list = [f[0] for f in feature_vectors]
+    feature_list = [val for sublist in feature_list for val in sublist]
+    _classify(feature_vectors, coast, query)

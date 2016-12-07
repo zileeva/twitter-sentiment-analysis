@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from api.twitter_calls import get_tweets, search_tweets, geo_tweets
+from api.sentiment import sentiment_tweets
 import os, sys
 import argparse
 
@@ -30,7 +31,7 @@ def _run_args(args):
         tweets = search_tweets(url)
     elif args.geo:
         query = args.geo[1].replace('#', '%23').replace(' ', '%20')
-        geo_tweets(args.geo[0].lower(), query)
+        sentiment_tweets(args.geo[0].lower(), query)
 
 if __name__ == '__main__':
     # Top Parser

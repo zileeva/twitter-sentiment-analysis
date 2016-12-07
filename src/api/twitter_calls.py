@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import oauth2 as oauth
+import sentiment
 from config import data, geocodes
 import json
 import re
@@ -102,7 +103,7 @@ def _reverse_geocode(locations, query, http_method="GET", post_body="", http_hea
     tweets = []
 
     for geo in locations:
-        print ""
+
         lat = geo[0]
         lng = geo[1]
         url = 'https://api.twitter.com/1.1/search/tweets.json?q=%s&geocode=%s%%2C%s%%2C15mi&lang=en&count=10' % (query, lat, lng)
@@ -112,11 +113,11 @@ def _reverse_geocode(locations, query, http_method="GET", post_body="", http_hea
         json_response = json.loads(response[1])
 
         for user in json_response['statuses']:
-            user_name = '@' + user['user']['screen_name']
             tweet = user['text']
+            tweets.append(tweet)
 
-            print _pre_process_tweets(tweet)
-
+    print len(tweets)
+    return tweets
 
 
 def geo_tweets(coast, query, http_method="GET", post_body="", http_headers=None):
@@ -127,7 +128,7 @@ def geo_tweets(coast, query, http_method="GET", post_body="", http_headers=None)
         for city in cities:
             lat = cities[city][0]
             lng = cities[city][1]
-            print city + ' has geocode of: ' + str(lat) + ',' + str(lng)
+            # print city + ' has geocode of: ' + str(lat) + ',' + str(lng)
 
             locations.append([lat, lng])
 
