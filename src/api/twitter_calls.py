@@ -89,8 +89,39 @@ def search_tweets(url, http_method="GET", post_body="", http_headers=None):
 
         print _pre_process_tweets(combined)
 
+def _reverse_geocode(locations, query, http_method="GET", post_body="", http_headers=None):
+    consumer = oauth.Consumer(key=data['CONSUMER_KEY'], secret=data['CONSUMER_SECRET'])
+    token = oauth.Token(key=data['ACCESS_TOKEN'], secret=data['ACCESS_SECRET'])
 
-def geo_tweets(coast, http_method="GET", post_body="", http_headers=None):
+    try:
+        # Checking if consumer/token are valid
+        client = oauth.Client(consumer, token)
+    except ValueError as e:
+        raise Exception(e.message)
+
+    tweets = []
+
+    for geo in locations:
+        print ""
+        lat = geo[0]
+        lng = geo[1]
+        url = 'https://api.twitter.com/1.1/search/tweets.json?q=%s&geocode=%s%%2C%s%%2C15mi&lang=en&count=10' % (query, lat, lng)
+
+        response = client.request(url, method=http_method, body=post_body, headers=http_headers)
+        # Convert to JSON
+        json_response = json.loads(response[1])
+
+        for user in json_response['statuses']:
+            user_name = '@' + user['user']['screen_name']
+            tweet = user['text']
+            combined = user_name + ' tweeted: ' + tweet
+
+            print _pre_process_tweets(combined)
+
+
+
+def geo_tweets(coast, query, http_method="GET", post_body="", http_headers=None):
+    locations = []
     # Check what coast we are looking for
     if coast == 'east' or coast == 'west':
         cities = geocodes[coast]
@@ -98,6 +129,10 @@ def geo_tweets(coast, http_method="GET", post_body="", http_headers=None):
             lat = cities[city][0]
             lng = cities[city][1]
             print city + ' has geocode of: ' + str(lat) + ',' + str(lng)
+
+            locations.append([lat, lng])
+
+        _reverse_geocode(locations, query) # change 10 with user tweets
     elif coast == 'both':
         print 'TO-DO: Return all cities'
     else:
