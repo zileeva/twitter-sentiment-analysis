@@ -148,6 +148,14 @@ def test(classifier):
       correct_count += 1
   print (float(correct_count) / len(tested_sentiments)) * 100
 
+def classify_tweets(classifier):
+  file_name = open(os.path.abspath(__file__ + "/../../../dataset") + "/" + "tweets_east_beach.txt")
+  tweets = []
+  for tweet in file_name:
+      processed_tweet = preprocessor.preprocess(tweet)
+      sentiment = classifier.classify(extract_features_all(get_all_f_v(processed_tweet)))
+      print "Tweet = %s\nSentiment = %s\n" % (tweet, sentiment)
+
 def classify(data):
   # training_data = nltk.classify.util.apply_features(extract_features, data)
   # write_training_data(training_data)
@@ -155,12 +163,8 @@ def classify(data):
   training_data = read_training_data()
   classifier = nltk.NaiveBayesClassifier.train(training_data)
 
-  # testTweet = 'Good case, Excellent value.'
-  # processedTestTweet = preprocessor.preprocess(testTweet)
-  # sentiment = classifier.classify(extract_features_all(get_all_f_v(processedTestTweet)))
-  test(classifier)
-
-  # print "testTweet = %s, sentiment = %s\n" % (testTweet, sentiment)
+  # test(classifier)
+  classify_tweets(classifier)
 
 
 if __name__ == "__main__":
