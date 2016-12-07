@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import oauth2 as oauth
-import sentiment
 from config import data, geocodes
 import json
 import re
